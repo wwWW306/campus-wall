@@ -8,30 +8,30 @@
 
 /* ─── Brutalist Mode (Default / Landing) ─── */
 :root {
-  --color-bg: #FFFFFF;
-  --color-surface: #F8F8F8;
-  --color-surface-solid: #FFFFFF;
-  --color-surface-alt: #000000;
+  --color-bg: #FCF5E1;
+  --color-surface: rgba(252, 245, 225, 0.8);
+  --color-surface-solid: #FCF5E1;
+  --color-surface-alt: rgba(0, 0, 0, 0.05);
 
-  --color-primary: #000000;
-  --color-primary-hover: #333333;
-  --color-primary-light: #f3f3f3;
+  --color-primary: #FF3333;
+  --color-primary-hover: #E62E2E;
+  --color-primary-light: rgba(255, 51, 51, 0.1);
 
-  --color-accent: #000000;
-  --color-accent-light: rgba(0, 0, 0, 0.05);
-  --color-accent-hover: #333333;
+  --color-accent: #FF3333;
+  --color-accent-light: rgba(255, 51, 51, 0.05);
+  --color-accent-hover: #E62E2E;
 
-  --color-text: #000000;
+  --color-text: #0D0D0D;
   --color-text-secondary: #444444;
-  --color-text-muted: #888888;
+  --color-text-muted: #777777;
 
-  --color-border: #000000;
-  --color-border-light: #DDDDDD;
+  --color-border: rgba(0, 0, 0, 0.1);
+  --color-border-light: rgba(0, 0, 0, 0.05);
 
-  --color-success: #000000;
-  --color-warning: #444444;
-  --color-danger: #000000;
-  --color-danger-light: #f3f3f3;
+  --color-success: #10B981;
+  --color-warning: #F59E0B;
+  --color-danger: #FF3333;
+  --color-danger-light: rgba(255, 51, 51, 0.1);
 
   --shadow-xs: none;
   --shadow-sm: none;
@@ -57,25 +57,25 @@
 
 /* ─── Clean Minimal Mode (Functional Pages) ─── */
 [data-page="app"] {
-  --color-bg: #ffffff;
-  --color-surface: #ffffff;
-  --color-surface-solid: #ffffff;
-  --color-surface-alt: #f5f5f5;
+  --color-bg: #FCF5E1;
+  --color-surface: #FCF5E1;
+  --color-surface-solid: #FCF5E1;
+  --color-surface-alt: rgba(0, 0, 0, 0.04);
 
-  --color-primary: #000000;
+  --color-primary: #0D0D0D;
   --color-primary-hover: #262626;
-  --color-primary-light: #f0f0f0;
+  --color-primary-light: rgba(255, 51, 51, 0.05);
 
-  --color-accent: #000000;
-  --color-accent-light: #f9f9f9;
-  --color-accent-hover: #171717;
+  --color-accent: #FF3333;
+  --color-accent-light: rgba(255, 51, 51, 0.05);
+  --color-accent-hover: #E62E2E;
 
-  --color-text: #000000;
+  --color-text: #0D0D0D;
   --color-text-secondary: #4b5563;
-  --color-text-muted: #9ca3af;
+  --color-text-muted: #888888;
 
-  --color-border: #e5e5e5;
-  --color-border-light: #f3f3f3;
+  --color-border: rgba(0, 0, 0, 0.08);
+  --color-border-light: rgba(0, 0, 0, 0.04);
 
   --shadow-xs: 0 1px 2px rgba(0,0,0,0.05);
   --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
@@ -95,6 +95,7 @@
   --transition-base: 250ms ease;
   --transition-bounce: 400ms cubic-bezier(0.34, 1.56, 0.64, 1);
 
+  --color-navbar-bg: #FFFFFF;
   --font-display: 'Inter', -apple-system, sans-serif;
 }
 
@@ -103,21 +104,22 @@
   --color-bg: #000000;
   --color-surface: #000000;
   --color-surface-solid: #000000;
-  --color-surface-alt: #111111;
+  --color-surface-alt: #121212;
+  --color-navbar-bg: #000000;
 
-  --color-primary: #ffffff;
-  --color-primary-hover: #e5e5e5;
-  --color-primary-light: rgba(255, 255, 255, 0.1);
+  --color-primary: #FF3333;
+  --color-primary-hover: #E62E2E;
+  --color-primary-light: rgba(255, 51, 51, 0.1);
 
   --color-text: #ffffff;
-  --color-text-secondary: #a3a3a3;
-  --color-text-muted: #525252;
+  --color-text-secondary: #d1d1d1;
+  --color-text-muted: #888888;
 
-  --color-border: #262626;
-  --color-border-light: #171717;
+  --color-border: #2a2a2a;
+  --color-border-light: #1f1f1f;
 
   --color-success: #ffffff;
-  --color-warning: #a3a3a3;
+  --color-warning: #d1d1d1;
   --color-danger: #ffffff;
   --color-danger-light: rgba(255, 255, 255, 0.1);
 

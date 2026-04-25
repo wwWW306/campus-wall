@@ -73,7 +73,7 @@ function formatTime(ts) {
 <style scoped>
 .post-card { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: 16px; cursor: pointer; transition: box-shadow var(--transition-fast); }
 .post-card:hover { box-shadow: var(--shadow-md); }
-.post-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+.post-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; background: transparent; border: none; }
 .author-link { flex-shrink: 0; }
 .author-info { flex: 1; min-width: 0; }
 .author-row { display: flex; align-items: center; gap: 8px; }
@@ -81,7 +81,7 @@ function formatTime(ts) {
 .author-name:hover { color: var(--color-primary); }
 .post-time { font-size: 12px; color: var(--color-text-muted); margin-top: 2px; display: block; }
 .more-btn { width: 32px; height: 32px; border-radius: var(--radius-full); background: transparent; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--color-text-muted); transition: all var(--transition-fast); flex-shrink: 0; }
-.more-btn:hover { background: var(--color-surface-alt); color: var(--color-text); }
+.more-btn:hover { background: rgba(0, 0, 0, 0.04); color: var(--color-text); }
 .post-body { margin-bottom: 12px; }
 .post-text { font-size: 15px; line-height: 1.7; color: var(--color-text); word-break: break-word; font-family: var(--font-sans); text-transform: none; }
 .post-img-single { margin-top: 12px; }
@@ -91,9 +91,9 @@ function formatTime(ts) {
 .img-thumb img { width: 100%; height: 100%; object-fit: cover; transition: transform var(--transition-fast); cursor: zoom-in; }
 .img-thumb:hover img { transform: scale(1.03); }
 .img-more { position: absolute; inset: 0; background: rgba(0,0,0,0.5); color: white; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 700; }
-.post-actions { display: flex; align-items: center; gap: 4px; padding-top: 8px; border-top: 1px solid var(--color-border-light); }
+.post-actions { display: flex; align-items: center; gap: 4px; padding-top: 8px; border-top: 1px solid var(--color-border-light); background: transparent; }
 .action-btn { display: flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: var(--radius-full); font-size: 13px; font-weight: 500; color: var(--color-text-muted); background: transparent; border: none; cursor: pointer; transition: all var(--transition-fast); font-family: var(--font-sans); }
-.action-btn:hover { background: var(--color-surface-alt); color: var(--color-text-secondary); }
+.action-btn:hover { background: rgba(0, 0, 0, 0.04); color: var(--color-text-secondary); }
 .action-btn--liked { color: var(--color-primary); }
 .action-btn--liked:hover { background: var(--color-danger-light); color: var(--color-danger); }
 </style>

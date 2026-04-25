@@ -1,17 +1,11 @@
 <template>
   <nav class="mobile-tabbar">
     <router-link to="/wall" class="tab-item" :class="{ 'tab-item--active': isActive('/wall') }">
-      <div class="tab-icon">
-        <Icons name="home" :size="22" />
-      </div>
-      <span class="tab-label">首页</span>
+      <Icons name="home" :size="24" />
     </router-link>
 
     <router-link to="/search" class="tab-item" :class="{ 'tab-item--active': isActive('/search') }">
-      <div class="tab-icon">
-        <Icons name="search" :size="22" />
-      </div>
-      <span class="tab-label">搜索</span>
+      <Icons name="search" :size="24" />
     </router-link>
 
     <router-link to="/post/new" class="tab-item tab-item--create">
@@ -21,18 +15,14 @@
     </router-link>
 
     <router-link to="/notifications" class="tab-item" :class="{ 'tab-item--active': isActive('/notifications') }">
-      <div class="tab-icon">
-        <Icons name="bell" :size="22" />
-        <span v-if="notifCount > 0" class="tab-badge">{{ notifCount > 9 ? '9+' : notifCount }}</span>
+      <div class="icon-wrap">
+        <Icons name="bell" :size="24" />
+        <span v-if="notifCount > 0" class="tab-badge"></span>
       </div>
-      <span class="tab-label">消息</span>
     </router-link>
 
     <router-link to="/profile" class="tab-item" :class="{ 'tab-item--active': isActive('/profile') }">
-      <div class="tab-icon">
-        <img :src="currentUser.avatar" class="tab-avatar" :alt="currentUser.name" />
-      </div>
-      <span class="tab-label">我的</span>
+      <img :src="currentUser.avatar" class="tab-avatar" :alt="currentUser.name" />
     </router-link>
   </nav>
 </template>
@@ -62,11 +52,13 @@ function isActive(path) {
   left: 0;
   right: 0;
   z-index: 1000;
-  background: rgba(255, 255, 255, 0.97);
-  backdrop-filter: blur(12px);
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
   border-top: 1px solid var(--color-border);
-  padding: 4px 0;
-  padding-bottom: max(4px, env(safe-area-inset-bottom));
+  padding: 8px 0;
+  padding-bottom: max(8px, env(safe-area-inset-bottom));
+  justify-content: space-around;
+  align-items: center;
 }
 
 .tab-item {
@@ -74,83 +66,56 @@ function isActive(path) {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 2px;
-  flex: 1;
   text-decoration: none;
-  padding: 4px 0;
   color: var(--color-text-muted);
-  transition: color var(--transition-fast);
-  position: relative;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  -webkit-tap-highlight-color: transparent;
 }
+
 .tab-item--active {
   color: var(--color-primary);
+  transform: translateY(-2px);
 }
 
-.tab-icon {
+.icon-wrap {
   position: relative;
-  width: 28px;
-  height: 28px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.tab-avatar {
-  width: 24px;
-  height: 24px;
-  border-radius: var(--radius-full);
-  object-fit: cover;
-  border: 2px solid transparent;
-  transition: border-color var(--transition-fast);
-}
-.tab-item--active .tab-avatar {
-  border-color: var(--color-primary);
 }
 
 .tab-badge {
   position: absolute;
-  top: -3px;
-  right: -6px;
-  min-width: 16px;
-  height: 16px;
-  background: #ef4444;
-  color: white;
-  border-radius: 9999px;
-  font-size: 9px;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 3px;
-  border: 2px solid white;
-}
-
-.tab-label {
-  font-size: 10px;
-  font-weight: 500;
-  line-height: 1;
-}
-
-/* 发布按钮特殊样式 */
-.tab-item--create {
-  color: white;
-}
-.tab-create-btn {
-  width: 44px;
-  height: 44px;
+  top: 0;
+  right: 0;
+  width: 8px;
+  height: 8px;
   background: var(--color-primary);
-  border-radius: var(--radius-full);
+  border-radius: 50%;
+  border: 2px solid #fff;
+}
+
+.tab-avatar {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid transparent;
+  transition: border-color 0.3s;
+}
+
+.tab-item--active .tab-avatar {
+  border-color: var(--color-primary);
+}
+
+.tab-create-btn {
+  width: 48px;
+  height: 48px;
+  background: var(--color-primary);
+  border-radius: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
-  box-shadow: 0 4px 12px rgba(45, 122, 74, 0.35);
-  transform: translateY(-8px);
-  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
-}
-.tab-item--create:active .tab-create-btn {
-  transform: translateY(-4px) scale(0.95);
-  box-shadow: 0 2px 8px rgba(45, 122, 74, 0.25);
+  box-shadow: 0 8px 16px rgba(255, 51, 51, 0.25);
+  transform: translateY(-10px);
 }
 
 @media (max-width: 768px) {

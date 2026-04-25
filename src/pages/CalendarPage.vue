@@ -1,209 +1,280 @@
 <template>
   <div class="calendar-page">
-    <div class="container">
-      <div class="calendar-header">
-        <button class="back-btn" @click="smartBack()"><Icons name="back" :size="20" /></button>
-        <h1 class="page-heading">📅 校历</h1>
-      </div>
-
-      <!-- 倒计时卡片 -->
-      <div class="countdown-cards">
-        <div v-for="c in countdowns" :key="c.label" class="countdown-card" :style="{ '--cd-color': c.color }">
-          <div class="cd-emoji">{{ c.emoji }}</div>
-          <div class="cd-info">
-            <span class="cd-label">{{ c.label }}</span>
-            <span class="cd-hint">{{ c.hint }}</span>
-          </div>
-          <div class="cd-days">
-            <span class="cd-num">{{ c.days }}</span>
-            <span class="cd-unit">天</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- 月历 -->
-      <div class="month-nav">
-        <button class="month-btn" @click="prevMonth"><Icons name="chevron-left" :size="18" /></button>
-        <h2 class="month-title">{{ currentYear }}年{{ currentMonth }}月</h2>
-        <button class="month-btn" @click="nextMonth"><Icons name="chevron-right" :size="18" /></button>
-      </div>
-
-      <div class="calendar-grid">
-        <div class="weekday-header">
-          <span v-for="d in weekdays" :key="d">{{ d }}</span>
-        </div>
-        <div class="days-grid">
-          <div v-for="(day, idx) in calendarDays" :key="idx"
-            class="day-cell"
-            :class="{
-              'day-cell--other': day.otherMonth,
-              'day-cell--today': day.isToday,
-              'day-cell--event': day.event
-            }"
-            @click="day.event && (selectedEvent = day.event)"
-          >
-            <span class="day-num">{{ day.date }}</span>
-            <span v-if="day.event" class="day-dot" :style="{ background: day.event.color }"></span>
-          </div>
-        </div>
-      </div>
-
-      <!-- 事件列表 -->
-      <div class="events-section">
-        <h3 class="events-title">📌 本月大事记</h3>
-        <div v-if="monthEvents.length === 0" class="empty-hint">这个月很安静，好好享受吧 🌿</div>
-        <div v-for="e in monthEvents" :key="e.date" class="event-item" :style="{ '--ev-color': e.color }">
-          <div class="event-dot"></div>
-          <div class="event-info">
-            <span class="event-name">{{ e.name }}</span>
-            <span class="event-date">{{ e.dateLabel }}</span>
-          </div>
-          <span class="event-tag">{{ e.tag }}</span>
-        </div>
-      </div>
-
-      <!-- 选中事件弹窗 -->
-      <div v-if="selectedEvent" class="event-modal-overlay" @click="selectedEvent = null">
-        <div class="event-modal" @click.stop>
-          <div class="modal-emoji">{{ selectedEvent.emoji || '📌' }}</div>
-          <h3>{{ selectedEvent.name }}</h3>
-          <p class="modal-date">{{ selectedEvent.dateLabel }}</p>
-          <p class="modal-hint">{{ selectedEvent.hint }}</p>
-          <button class="btn btn-primary btn-sm" @click="selectedEvent = null">知道了</button>
-        </div>
+    <div class="page-header">
+      <button class="back-btn" @click="goBack">
+        <Icons name="arrow-left" :size="24" />
+      </button>
+      <div class="header-titles">
+        <h1>2025-2026 学年校历</h1>
+        <p class="subtitle">北海艺术设计学院官方日程安排</p>
       </div>
     </div>
+
+    <main class="calendar-content">
+      <div class="semester-section">
+        <h2 class="semester-title">秋季学期 <span>Autumn Semester</span></h2>
+        <div class="timeline">
+          <div v-for="(month, idx) in autumnSemester" :key="idx" class="timeline-month">
+            <div class="month-marker">
+              <span class="month-num">{{ month.month }}</span>
+              <span class="month-en">{{ month.monthEn }}</span>
+            </div>
+            <div class="events-list">
+              <div v-for="(event, eIdx) in month.events" :key="eIdx" class="event-card" :class="{ 'highlight': isHighlight(event.desc) }">
+                <div class="event-date">{{ event.date }}</div>
+                <div class="event-desc">{{ event.desc }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="semester-section spring-section">
+        <h2 class="semester-title">春季学期 <span>Spring Semester</span></h2>
+        <div class="timeline">
+          <div v-for="(month, idx) in springSemester" :key="idx" class="timeline-month">
+            <div class="month-marker">
+              <span class="month-num">{{ month.month }}</span>
+              <span class="month-en">{{ month.monthEn }}</span>
+            </div>
+            <div class="events-list">
+              <div v-for="(event, eIdx) in month.events" :key="eIdx" class="event-card" :class="{ 'highlight': isHighlight(event.desc) }">
+                <div class="event-date">{{ event.date }}</div>
+                <div class="event-desc">{{ event.desc }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
   </div>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { useRouter } from 'vue-router'
 import { smartBack } from '../router'
 import Icons from '../components/Icons.vue'
 
-const now = new Date()
-const currentYear = ref(now.getFullYear())
-const currentMonth = ref(now.getMonth() + 1)
-const selectedEvent = ref(null)
-const weekdays = ['日', '一', '二', '三', '四', '五', '六']
+const router = useRouter()
 
-const allEvents = [
-  { month: 2, date: 17, name: '春季学期开学', tag: '开学', color: '#2d7a4a', emoji: '🎒', hint: '新学期新气象，冲冲冲！', dateLabel: '2月17日' },
-  { month: 3, date: 8, name: '妇女节', tag: '节日', color: '#ec4899', emoji: '🌷', hint: '祝所有女同学节日快乐！', dateLabel: '3月8日' },
-  { month: 4, date: 14, name: '期中考试周', tag: '考试', color: '#ef4444', emoji: '📝', hint: '加油！你已经很棒了 💪', dateLabel: '4月14日-18日' },
-  { month: 5, date: 1, name: '五一假期', tag: '放假', color: '#22c55e', emoji: '🎉', hint: '五天假期！好好休息～', dateLabel: '5月1日-5日' },
-  { month: 5, date: 4, name: '青年节', tag: '节日', color: '#3b82f6', emoji: '🌟', hint: '年轻就是资本，尽情绽放吧！', dateLabel: '5月4日' },
-  { month: 6, date: 16, name: '期末考试周', tag: '考试', color: '#ef4444', emoji: '🔥', hint: '最后冲刺！熬过去就是暑假！', dateLabel: '6月16日-27日' },
-  { month: 6, date: 28, name: '毕业典礼', tag: '活动', color: '#8b5cf6', emoji: '🎓', hint: '前程似锦，不负韶华', dateLabel: '6月28日' },
-  { month: 7, date: 5, name: '暑假开始', tag: '放假', color: '#22c55e', emoji: '🏖️', hint: '漫长的假期来啦！享受吧～', dateLabel: '7月5日' },
-  { month: 9, date: 1, name: '秋季学期开学', tag: '开学', color: '#2d7a4a', emoji: '🍂', hint: '又回到熟悉的校园了', dateLabel: '9月1日' },
-  { month: 10, date: 1, name: '国庆假期', tag: '放假', color: '#22c55e', emoji: '🇨🇳', hint: '七天长假！', dateLabel: '10月1日-7日' },
-  { month: 12, date: 15, name: '期末考试周', tag: '考试', color: '#ef4444', emoji: '📚', hint: '又到了检验自己的时候了', dateLabel: '12月15日-26日' },
-  { month: 1, date: 10, name: '寒假开始', tag: '放假', color: '#22c55e', emoji: '❄️', hint: '回家过年咯！', dateLabel: '1月10日' },
+function goBack() {
+  smartBack('/wall')
+}
+
+function isHighlight(desc) {
+  const highlights = ['放假', '国庆', '中秋', '春节', '元旦', '端午', '劳动节', '三月三', '元宵', '运动会']
+  return highlights.some(h => desc.includes(h))
+}
+
+const autumnSemester = [
+  { month: '8月', monthEn: 'August', events: [{ date: '8月30日-31日', desc: '大二、大三学生报到' }] },
+  { month: '9月', monthEn: 'September', events: [{ date: '9月1日', desc: '大二、大三开始上课' }, { date: '9月6日-7日', desc: '大一新生报到' }, { date: '9月8日', desc: '大一新生开始上课' }, { date: '9月20日-21日', desc: '全国计算机等级考试、公共课补考' }] },
+  { month: '10月', monthEn: 'October', events: [{ date: '10月1日', desc: '国庆节' }, { date: '10月8日', desc: '中秋节' }, { date: '第7-11周', desc: '涠洲岛综合实践教学' }] },
+  { month: '11月', monthEn: 'November', events: [{ date: '第9周', desc: '拟期中教学检查' }, { date: '11月15日-16日', desc: '普通话水平测试' }, { date: '11月22日-23日', desc: 'NACG 考试' }, { date: '11月24日-12月7日', desc: '2025级新生军训' }] },
+  { month: '12月', monthEn: 'December', events: [{ date: '12月13日', desc: '大学英语四、六级考试' }, { date: '12月19日-20日', desc: '校运动会' }] },
+  { month: '1月', monthEn: 'January', events: [{ date: '1月1日', desc: '元旦' }, { date: '1月28日-29日', desc: '期末考试' }, { date: '1月30日', desc: '放假' }] }
 ]
 
-const countdowns = computed(() => {
-  const today = new Date()
-  return allEvents
-    .map(e => {
-      let eventDate = new Date(today.getFullYear(), e.month - 1, e.date)
-      if (eventDate < today) eventDate = new Date(today.getFullYear() + 1, e.month - 1, e.date)
-      const days = Math.ceil((eventDate - today) / (1000 * 60 * 60 * 24))
-      return { ...e, days, label: e.name, color: e.color }
-    })
-    .filter(e => e.days > 0 && e.days <= 90)
-    .sort((a, b) => a.days - b.days)
-    .slice(0, 3)
-})
-
-const monthEvents = computed(() => allEvents.filter(e => e.month === currentMonth.value))
-
-const calendarDays = computed(() => {
-  const y = currentYear.value, m = currentMonth.value - 1
-  const firstDay = new Date(y, m, 1).getDay()
-  const daysInMonth = new Date(y, m + 1, 0).getDate()
-  const daysInPrev = new Date(y, m, 0).getDate()
-  const today = new Date()
-  const days = []
-
-  for (let i = firstDay - 1; i >= 0; i--) {
-    days.push({ date: daysInPrev - i, otherMonth: true })
-  }
-  for (let i = 1; i <= daysInMonth; i++) {
-    const event = allEvents.find(e => e.month === currentMonth.value && e.date === i)
-    const isToday = today.getFullYear() === y && today.getMonth() === m && today.getDate() === i
-    days.push({ date: i, isToday, event })
-  }
-  const remaining = 42 - days.length
-  for (let i = 1; i <= remaining; i++) {
-    days.push({ date: i, otherMonth: true })
-  }
-  return days
-})
-
-function prevMonth() {
-  if (currentMonth.value === 1) { currentMonth.value = 12; currentYear.value-- }
-  else currentMonth.value--
-}
-function nextMonth() {
-  if (currentMonth.value === 12) { currentMonth.value = 1; currentYear.value++ }
-  else currentMonth.value++
-}
+const springSemester = [
+  { month: '2月', monthEn: 'February', events: [{ date: '2月16日', desc: '除夕' }, { date: '2月17日', desc: '春节' }, { date: '2月28日-3月1日', desc: '学生分批报到' }] },
+  { month: '3月', monthEn: 'March', events: [{ date: '3月2日', desc: '开始上课' }, { date: '3月3日', desc: '元宵节、拟期初教学检查' }, { date: '3月28日-29日', desc: '全国计算机等级考试' }] },
+  { month: '4月', monthEn: 'April', events: [{ date: '4月10日', desc: '沙滩运动会（最终时间视情况调整）' }, { date: '4月19日', desc: '广西三月三' }, { date: '4月25日-26日', desc: 'NACG 考试、期中教学检查' }] },
+  { month: '5月', monthEn: 'May', events: [{ date: '5月1日', desc: '劳动节' }, { date: '5月16日-17日', desc: '普通话水平测试' }] },
+  { month: '6月', monthEn: 'June', events: [{ date: '6月6日', desc: '大三放假' }, { date: '6月10日-11日', desc: '期末考试' }, { date: '6月12日', desc: '放假' }, { date: '6月13日', desc: '大学英语四、六级考试' }, { date: '6月19日', desc: '端午节' }] }
+]
 </script>
 
 <style scoped>
-.calendar-page { min-height: 100vh; padding: 16px 0 40px; }
-.calendar-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
-.back-btn { width: 36px; height: 36px; border-radius: var(--radius-full); background: var(--color-surface); border: 1px solid var(--color-border); cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--color-text); transition: all var(--transition-fast); }
-.back-btn:hover { background: var(--color-surface-alt); }
-.page-heading { font-size: 22px; font-weight: 700; color: var(--color-text); }
+.calendar-page {
+  min-height: 100vh;
+  background: var(--color-bg);
+  color: var(--color-text);
+  padding-top: 72px; /* Top nav height */
+  padding-bottom: 80px;
+}
 
-/* 倒计时卡片 */
-.countdown-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 24px; }
-.countdown-card { display: flex; align-items: center; gap: 12px; padding: 16px; background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-lg); border-left: 4px solid var(--cd-color); }
-.cd-emoji { font-size: 28px; }
-.cd-info { flex: 1; min-width: 0; }
-.cd-label { display: block; font-size: 14px; font-weight: 600; color: var(--color-text); }
-.cd-hint { display: block; font-size: 12px; color: var(--color-text-muted); margin-top: 2px; }
-.cd-days { text-align: center; }
-.cd-num { display: block; font-size: 28px; font-weight: 800; color: var(--cd-color); line-height: 1; }
-.cd-unit { font-size: 12px; color: var(--color-text-muted); }
+.page-header {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 40px 24px;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
 
-/* 月历 */
-.month-nav { display: flex; align-items: center; justify-content: center; gap: 16px; margin-bottom: 16px; }
-.month-title { font-size: 18px; font-weight: 700; color: var(--color-text); min-width: 140px; text-align: center; }
-.month-btn { width: 32px; height: 32px; border-radius: var(--radius-full); background: var(--color-surface); border: 1px solid var(--color-border); cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--color-text); transition: all var(--transition-fast); }
-.month-btn:hover { background: var(--color-surface-alt); }
+.back-btn {
+  background: var(--color-surface-alt);
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
 
-.calendar-grid { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 24px; }
-.weekday-header { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; padding: 10px 0; font-size: 13px; font-weight: 600; color: var(--color-text-muted); border-bottom: 1px solid var(--color-border-light); }
-.days-grid { display: grid; grid-template-columns: repeat(7, 1fr); }
-.day-cell { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 10px 4px; min-height: 48px; cursor: default; transition: background var(--transition-fast); }
-.day-cell:hover { background: var(--color-surface-alt); }
-.day-cell--other .day-num { color: var(--color-text-muted); opacity: 0.4; }
-.day-cell--today .day-num { background: var(--color-primary); color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
-.day-cell--event { cursor: pointer; }
-.day-num { font-size: 14px; font-weight: 500; color: var(--color-text); }
-.day-dot { width: 5px; height: 5px; border-radius: 50%; margin-top: 3px; }
+.back-btn:hover {
+  background: var(--color-text);
+  color: var(--color-bg);
+  transform: scale(1.05);
+}
 
-/* 事件列表 */
-.events-section { max-width: 640px; }
-.events-title { font-size: 16px; font-weight: 700; color: var(--color-text); margin-bottom: 12px; }
-.empty-hint { padding: 20px; text-align: center; color: var(--color-text-muted); font-size: 14px; }
-.event-item { display: flex; align-items: center; gap: 12px; padding: 12px; background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-md); margin-bottom: 8px; }
-.event-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--ev-color); flex-shrink: 0; }
-.event-info { flex: 1; }
-.event-name { display: block; font-size: 14px; font-weight: 600; color: var(--color-text); }
-.event-date { display: block; font-size: 12px; color: var(--color-text-muted); margin-top: 2px; }
-.event-tag { padding: 3px 8px; border-radius: var(--radius-full); font-size: 11px; font-weight: 600; background: var(--color-surface-alt); color: var(--color-text-secondary); border: 1px solid var(--color-border); }
+.header-titles h1 {
+  font-size: 32px;
+  font-weight: 900;
+  margin: 0 0 8px 0;
+  letter-spacing: -0.5px;
+}
 
-/* 弹窗 */
-.event-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; z-index: 200; }
-.event-modal { background: var(--color-surface); border-radius: var(--radius-xl); padding: 32px; text-align: center; max-width: 320px; width: 90%; }
-.modal-emoji { font-size: 48px; margin-bottom: 12px; }
-.event-modal h3 { font-size: 18px; font-weight: 700; color: var(--color-text); margin-bottom: 6px; }
-.modal-date { font-size: 13px; color: var(--color-text-muted); margin-bottom: 8px; }
-.modal-hint { font-size: 14px; color: var(--color-text-secondary); margin-bottom: 16px; line-height: 1.5; }
+.subtitle {
+  font-size: 16px;
+  color: var(--color-text-secondary);
+  margin: 0;
+}
 
-@media (max-width: 768px) { .countdown-cards { grid-template-columns: 1fr; } }
+.calendar-content {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 60px;
+}
+
+.semester-title {
+  font-size: 24px;
+  font-weight: 800;
+  margin-bottom: 40px;
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid var(--color-text);
+}
+
+.semester-title span {
+  font-size: 14px;
+  color: var(--color-text-muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  position: relative;
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 35px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--color-border);
+  z-index: 0;
+}
+
+.timeline-month {
+  display: flex;
+  gap: 40px;
+  position: relative;
+  z-index: 1;
+}
+
+.month-marker {
+  width: 72px;
+  height: 72px;
+  background: var(--color-bg);
+  border: 2px solid var(--color-text);
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 4px 4px 0 var(--color-text);
+}
+
+.month-num {
+  font-size: 20px;
+  font-weight: 900;
+  line-height: 1.2;
+}
+
+.month-en {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.events-list {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-top: 10px;
+}
+
+.event-card {
+  background: var(--color-surface-alt);
+  border: 1px solid var(--color-border);
+  padding: 20px;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.event-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--color-primary);
+}
+
+.event-card.highlight {
+  background: var(--color-primary-light);
+  border-color: var(--color-primary);
+}
+
+.event-card.highlight .event-date {
+  color: var(--color-primary);
+}
+
+.event-card.highlight .event-desc {
+  font-weight: 800;
+}
+
+.event-date {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--color-text-secondary);
+}
+
+.event-desc {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-text);
+  line-height: 1.5;
+}
+
+@media (max-width: 640px) {
+  .timeline::before { left: 24px; }
+  .timeline-month { gap: 20px; }
+  .month-marker { width: 50px; height: 50px; border-radius: 12px; box-shadow: 2px 2px 0 var(--color-text); }
+  .month-num { font-size: 16px; }
+  .month-en { display: none; }
+  .events-list { padding-top: 0; }
+  .page-header { padding: 24px 16px; }
+  .header-titles h1 { font-size: 24px; }
+  .calendar-content { padding: 0 16px; }
+}
 </style>
